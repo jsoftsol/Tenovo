@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: tenovo_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tenovo_user
+      POSTGRES_PASSWORD: tenovo_password
+      POSTGRES_DB: tenovo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - tenovo_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: tenovo_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tenovo_postgres_data:

@@ -10,14 +10,7 @@ import authConfig from "@/auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/signin",
-  },
   providers: [
-    ...authConfig.providers,
     Credentials({
       name: "Credentials",
       credentials: {
@@ -25,6 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: {},
       },
       async authorize(credentials) {
+
         const email = String(credentials?.email || "").toLowerCase().trim();
         const password = String(credentials?.password || "");
 

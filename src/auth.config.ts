@@ -1,15 +1,11 @@
-import Credentials from "next-auth/providers/credentials";
+import type { NextAuthConfig } from "next-auth";
 
-const authConfig = {
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {},
-      async authorize() {
-        return null;
-      },
-    }),
-  ],
-};
-
-export default authConfig;
+export default {
+  providers: [],
+  pages: {
+    signIn: "/signin",
+  },
+  session: {
+    strategy: "jwt",
+  },
+} satisfies NextAuthConfig;

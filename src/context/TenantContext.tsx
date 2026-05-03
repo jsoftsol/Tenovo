@@ -9,6 +9,12 @@ type TenantContextType = {
     slug: string;
   };
   role: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+  };
 };
 
 const TenantContext = createContext<TenantContextType | null>(null);

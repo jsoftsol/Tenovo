@@ -12,7 +12,7 @@ import { TenantProvider } from "@/context/TenantContext";
 type MembershipWithRelations = Prisma.MembershipGetPayload<{
   include: {
     organization: true;
-    // user: true;
+    user: true;
   };
 }>;
 

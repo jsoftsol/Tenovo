@@ -5,10 +5,64 @@ import Label from "@/components/form/Label";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Button from "../ui/button/Button";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        organizationName,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setLoading(false);
+      setError(data.message || "Something went wrong.");
+      return;
+    }
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      router.push("/signin");
+      return;
+    }
+
+    router.push("/");
+    router.refresh();
+  }
+
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -83,33 +137,21 @@ export default function SignUpForm() {
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-5">
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {/* <!-- First Name --> */}
-                  <div className="sm:col-span-1">
-                    <Label>
-                      First Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="fname"
-                      name="fname"
-                      placeholder="Enter your first name"
-                    />
-                  </div>
-                  {/* <!-- Last Name --> */}
-                  <div className="sm:col-span-1">
-                    <Label>
-                      Last Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="lname"
-                      name="lname"
-                      placeholder="Enter your last name"
-                    />
-                  </div>
+                {/* <!-- Name --> */}
+                <div>
+                  <Label>
+                    Name<span className="text-error-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    defaultValue={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
                 {/* <!-- Email --> */}
                 <div>
@@ -121,6 +163,8 @@ export default function SignUpForm() {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
+                    defaultValue={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 {/* <!-- Password --> */}
@@ -132,6 +176,8 @@ export default function SignUpForm() {
                     <Input
                       placeholder="Enter your password"
                       type={showPassword ? "text" : "password"}
+                      defaultValue={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -144,6 +190,20 @@ export default function SignUpForm() {
                       )}
                     </span>
                   </div>
+                </div>
+                {/* <!-- Organization --> */}
+                <div>
+                  <Label>
+                    Organization<span className="text-error-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    id="organization"
+                    name="organization"
+                    placeholder="Enter your organization name"
+                    defaultValue={organizationName}
+                    onChange={(e) => setOrganizationName(e.target.value)}
+                  />
                 </div>
                 {/* <!-- Checkbox --> */}
                 <div className="flex items-center gap-3">
@@ -165,9 +225,10 @@ export default function SignUpForm() {
                 </div>
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                    Sign Up
-                  </button>
+                  <Button disabled={loading} className="w-full" size="sm">
+                    {loading ? "Signing up..." : "Sign Up"}
+                  </Button>
+                  {error && <p className="text-sm text-red-500">{error}</p>}
                 </div>
               </div>
             </form>

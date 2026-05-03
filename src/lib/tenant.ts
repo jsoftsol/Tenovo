@@ -28,6 +28,7 @@ export async function getCurrentMembership() {
     },
     include: {
       organization: true,
+      // user: true,
     },
     orderBy: {
       createdAt: "asc",

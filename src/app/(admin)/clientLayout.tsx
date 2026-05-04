@@ -9,6 +9,7 @@ import React from "react";
 import { AppProvider } from "@/context/AppContext";
 import UserType from "@/types/user";
 import MembershipType from "@/types/membership";
+import {Toaster} from "sonner";
 
 
 export default function ClientLayout({
@@ -45,6 +46,7 @@ export default function ClientLayout({
           <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
         </div>
       </div>
+      <Toaster richColors position="top-right" />
     </AppProvider>
   );
 }

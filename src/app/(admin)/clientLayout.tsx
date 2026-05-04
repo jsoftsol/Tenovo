@@ -6,22 +6,19 @@ import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
 import React from "react";
 
-import { Prisma } from "@/generated/prisma/client";
-import { TenantProvider } from "@/context/TenantContext";
+import { AppProvider } from "@/context/AppContext";
+import UserType from "@/types/user";
+import MembershipType from "@/types/membership";
 
-type MembershipWithRelations = Prisma.MembershipGetPayload<{
-  include: {
-    organization: true;
-    user: true;
-  };
-}>;
 
-export default function AdminLayout({
+export default function ClientLayout({
   children,
-  membership
+  user,
+  membership,
 }: {
   children: React.ReactNode;
-  membership: MembershipWithRelations;
+  user: UserType;
+  membership: MembershipType;
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
@@ -33,7 +30,7 @@ export default function AdminLayout({
       : "lg:ml-[90px]";
 
   return (
-    <TenantProvider value={membership}>
+    <AppProvider value={{ membership, user }}>
       <div className="min-h-screen xl:flex">
         {/* Sidebar and Backdrop */}
         <AppSidebar />
@@ -48,6 +45,6 @@ export default function AdminLayout({
           <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
         </div>
       </div>
-    </TenantProvider>
+    </AppProvider>
   );
 }

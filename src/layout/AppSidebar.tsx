@@ -18,7 +18,7 @@ import {
   UserCircleIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-import { useTenant } from "@/context/TenantContext";
+import { useAppContext } from "@/context/AppContext";
 
 type NavItem = {
   name: string;
@@ -121,7 +121,8 @@ const getActiveSubmenu = (pathname: string) => {
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-  const { organization, role } = useTenant();
+  const { membership } = useAppContext();
+  const { organization, role } = membership;
 
   const renderMenuItems = (
     navItems: NavItem[],

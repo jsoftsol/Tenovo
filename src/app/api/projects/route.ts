@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentMembership } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { canManageProjects, canViewProjects } from "@/lib/permissions";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET() {
   const membership = await getCurrentMembership();
@@ -54,6 +55,18 @@ export async function POST(request: Request) {
       name,
       description: description || null,
       organizationId: membership.organizationId,
+    },
+  });
+
+  await createAuditLog({
+    organizationId: membership.organizationId,
+    userId: membership.userId,
+    action: "project.created",
+    entity: "Project",
+    entityId: project.id,
+    metadata: {
+      name: project.name,
+      description: project.description,
     },
   });
 

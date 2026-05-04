@@ -20,6 +20,7 @@ export default function ClientLayout({
   children: React.ReactNode;
   user: UserType;
   membership: MembershipType;
+  memberships: MembershipType[];
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 

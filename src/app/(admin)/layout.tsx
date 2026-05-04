@@ -1,6 +1,6 @@
 // src/app/(admin)/layout.tsx
 import { redirect } from "next/navigation";
-import { getCurrentMembership } from "@/lib/tenant";
+import { getCurrentMembership, getUserMemberships } from "@/lib/tenant";
 import ClientLayout from "./clientLayout";
 import { auth } from "@/auth";
 import UserType from "@/types/user";
@@ -11,6 +11,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const membership = await getCurrentMembership();
+  const memberships = await getUserMemberships();
   const session = await auth();
 
   if (!session?.user) {
@@ -29,7 +30,7 @@ export default async function AdminLayout({
   };
 
   return (
-    <ClientLayout user={user} membership={membership}>
+    <ClientLayout user={user} membership={membership} memberships={memberships}>
       {children}
     </ClientLayout>
   );

@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export default function getErrorMessage(error: unknown): string {
+export default function getErrorMessage(error: unknown, defaultErrorMessage: string = "Something went wrong"): string {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.message || "Something went wrong";
+    return error.response?.data?.message || defaultErrorMessage;
   }
 
   if (error instanceof Error) {

@@ -38,6 +38,8 @@ export async function POST(request: Request) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-  })
+  });
+
+  return NextResponse.json({ success: true, message: "Organization switched successfully" });
 
 }

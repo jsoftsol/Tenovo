@@ -8,6 +8,8 @@ import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Button from "../ui/button/Button";
+import { api } from "@/lib/api";
+import axios from "axios";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,42 +27,39 @@ export default function SignUpForm() {
     setError("");
     setLoading(true);
 
-    const response = await fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const { data } = await api.post("/register", {
         name,
         email,
         password,
         organizationName,
-      }),
-    });
+      });
 
-    const data = await response.json();
+      if (data) {
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
 
-    if (!response.ok) {
+        if (result?.error) {
+          router.push("/signin");
+          return;
+        }
+
+        router.push("/");
+        router.refresh();
+      }
+
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Something went wrong");
+      } else {
+        setError("Something went wrong");
+      }
+    } finally {
       setLoading(false);
-      setError(data.message || "Something went wrong.");
-      return;
     }
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setLoading(false);
-
-    if (result?.error) {
-      router.push("/signin");
-      return;
-    }
-
-    router.push("/");
-    router.refresh();
   }
 
   return (

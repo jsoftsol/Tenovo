@@ -4,6 +4,7 @@ import React, { use, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import ProjectType from "@/types/project";
 import getErrorMessage from "@/lib/api-error";
+import { toast } from "sonner";
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectType[]>([]);
@@ -31,8 +32,12 @@ export default function Projects() {
       setProjects((existing) => [data.project, ...existing]);
       setName("");
       setDescription("");
+
+      toast.success("Project created successfully!");
     } catch (error) {
-      setError(getErrorMessage(error));
+      const message = getErrorMessage(error);
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -46,7 +51,9 @@ export default function Projects() {
         setProjects(data.projects);
       }
       catch (error) {
-        setError(getErrorMessage(error));
+        const message = getErrorMessage(error);
+        setError(message);
+        toast.error(message);
       }
       finally {
         setLoading(false);

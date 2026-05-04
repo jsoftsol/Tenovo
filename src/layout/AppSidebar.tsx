@@ -3,11 +3,12 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "../context/SidebarContext";
+import { useSidebar } from "@/context/SidebarContext";
 import {
   BoxCubeIcon,
   CalenderIcon,
   ChevronDownIcon,
+  FolderIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
@@ -16,7 +17,7 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
-} from "../icons/index";
+} from "@/icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { useAppContext } from "@/context/AppContext";
 
@@ -33,6 +34,11 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     path: "/",
     // subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+  },
+  {
+    icon: <FolderIcon />,
+    name: "Projects",
+    path: "/projects",
   },
   {
     icon: <CalenderIcon />,

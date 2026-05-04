@@ -16,6 +16,7 @@ export default function ClientLayout({
   children,
   user,
   membership,
+  memberships,
 }: {
   children: React.ReactNode;
   user: UserType;
@@ -32,7 +33,7 @@ export default function ClientLayout({
       : "lg:ml-[90px]";
 
   return (
-    <AppProvider value={{ membership, user }}>
+    <AppProvider value={{ membership, memberships, user }}>
       <div className="min-h-screen xl:flex">
         {/* Sidebar and Backdrop */}
         <AppSidebar />

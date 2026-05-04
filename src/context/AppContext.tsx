@@ -6,9 +6,8 @@ import MembershipType from "@/types/membership";
 
 type AppContextType = {
   user: UserType;
-  membership: MembershipType
-  // organization: OrganizationType;
-  // role: string;
+  membership: MembershipType,
+  memberships: MembershipType[];
 };
 
 const AppContext = createContext<AppContextType | null>(null);

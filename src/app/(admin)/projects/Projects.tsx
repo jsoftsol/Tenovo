@@ -5,6 +5,8 @@ import { api } from "@/lib/api";
 import ProjectType from "@/types/project";
 import getErrorMessage from "@/lib/api-error";
 import { toast } from "sonner";
+import Button from "@/components/ui/button/Button";
+import Input from "@/components/form/input/InputField";
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectType[]>([]);
@@ -14,6 +16,8 @@ export default function Projects() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const [isCreatFormOpen, setIsCreateFormOpen] = useState(false);
 
 
 
@@ -32,6 +36,8 @@ export default function Projects() {
       setProjects((existing) => [data.project, ...existing]);
       setName("");
       setDescription("");
+
+      setIsCreateFormOpen(false);
 
       toast.success("Project created successfully!");
     } catch (error) {
@@ -66,46 +72,74 @@ export default function Projects() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white/90">
-          Projects
-        </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Tenant-isolated projects for the active organization.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white/90">
+            Projects
+          </h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Tenant-isolated projects for the active organization.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => { setError(""); setIsCreateFormOpen(true) }}
+          className="btn btn-outline btn-sm"
+          size="xs"
+          variant="outline"
+        >
+          New Project
+        </Button>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-        <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90">
-          Create Project
-        </h2>
+      {isCreatFormOpen && (
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/50 px-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+                  Create Project
+                </h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Add a new project inside the current tenant.
+                </p>
+              </div>
 
-        <form onSubmit={createProject} className="grid gap-4 md:grid-cols-3">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Project name"
-            className="h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-          />
+              <Button
+                onClick={() => setIsCreateFormOpen(false)}
+                size="xs"
+                variant="simple"
+              >
+                ✕
+              </Button>
+            </div>
+            <form onSubmit={createProject} className="grid gap-4 md:grid-cols-3">
+              <Input
+                defaultValue={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Project name"
+              />
 
-          <input
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
-            className="h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-          />
+              <Input
+                defaultValue={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description"
+              />
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-60"
-          >
-            {saving ? "Creating..." : "Create Project"}
-          </button>
-        </form>
-
-        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
-      </div>
+              <Button
+                disabled={saving}
+              >
+                {saving ? "Creating..." : "Create Project"}
+              </Button>
+            </form>
+            {error && (
+              <div className="mt-4 rounded bg-red-50 p-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="border-b border-gray-200 px-5 py-4 dark:border-gray-800">

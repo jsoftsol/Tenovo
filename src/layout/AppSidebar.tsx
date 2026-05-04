@@ -20,6 +20,11 @@ import {
 } from "@/icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { useAppContext } from "@/context/AppContext";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
+import getErrorMessage from "@/lib/api-error";
+import Select from "@/components/form/Select";
 
 type NavItem = {
   name: string;
@@ -132,8 +137,26 @@ const getActiveSubmenu = (pathname: string) => {
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-  const { membership } = useAppContext();
+  const { membership, memberships } = useAppContext();
   const { organization, role } = membership;
+  const organizations = memberships.map(_membership => ({ ..._membership.organization, role: _membership.role }));
+
+  const router = useRouter();
+
+  async function handleOrganizationChange(
+    value: string
+  ) {
+    try {
+      await api.post("/organizations/switch", {
+        organizationId: value,
+      });
+
+      toast.success("Organization switched.");
+      router.refresh();
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to switch organization."));
+    }
+  }
 
   const renderMenuItems = (
     navItems: NavItem[],
@@ -344,9 +367,18 @@ const AppSidebar: React.FC = () => {
           )}
         </Link>
       </div>
-      <div className="px-4 py-3 border-b">
+      <div className="">
         <p className="text-sm font-semibold">{organization.name}</p>
         <p className="text-xs text-gray-500">{role}</p>
+
+        <Select
+          defaultValue={organization.id}
+          options={organizations.map(_organization => ({ value: _organization.id, label: _organization.name }))}
+          onChange={handleOrganizationChange}
+          className="dark:bg-dark-900"
+        />
+
+
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">

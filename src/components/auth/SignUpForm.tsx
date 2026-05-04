@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Button from "../ui/button/Button";
 import { api } from "@/lib/api";
 import axios from "axios";
+import getErrorMessage from "@/lib/api-error";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -51,12 +52,8 @@ export default function SignUpForm() {
         router.refresh();
       }
 
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Something went wrong");
-      } else {
-        setError("Something went wrong");
-      }
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

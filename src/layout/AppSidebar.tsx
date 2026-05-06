@@ -51,6 +51,11 @@ const navItems: NavItem[] = [
     path: "/audit-logs",
   },
   {
+    icon: <UserCircleIcon />,
+    name: "Team",
+    path: "/team",
+  },
+  {
     icon: <CalenderIcon />,
     name: "Calendar",
     path: "/calendar",

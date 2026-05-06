@@ -5,9 +5,9 @@ import { canManageOrganization } from '@/lib/permissions';
 import { createAuditLog } from '@/lib/audit';
 import { getCurrentMembership } from '@/lib/tenant';
 
-const allowedRoles = ['Admin', 'Member', 'Viewer'] as const;
+const allowedRoles = ['ADMIN', 'MEMBER', 'VIEWER'] as const;
 
-export async function GET(request: Request) {
+export async function GET() {
   const membership = await getCurrentMembership();
 
   if (!membership) {

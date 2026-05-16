@@ -49,6 +49,37 @@ export default function Team() {
     }
   }
 
+  async function updateMemberRole(membershipId: string, role: string) {
+    try {
+      const { data } = await api.patch(`/memberships/${membershipId}`, { role });
+      setMembers(currentMembers => currentMembers.map(member => member.id === membershipId ? data.member : member));
+
+      toast.success("Member role updated");
+    }
+    catch (error) {
+      toast.error(getErrorMessage(error, "Failed to update role"));
+    }
+  }
+
+  async function removeMember(membershipId: string) {
+    const confirm = window.confirm("Are you sure you want to remove this member from the organization?");
+
+    if (!confirm) {
+      return;
+    }
+
+    try {
+      await api.delete(`/memberships/${membershipId}`);
+
+      setMembers(currentMembers => currentMembers.filter(member => member.id !== membershipId));
+
+      toast.success("Member removed from organization");
+    }
+    catch (error) {
+      toast.error(getErrorMessage(error, "Failed to remove member"));
+    }
+  }
+
   useEffect(() => {
     async function loadMembers() {
       try {
@@ -177,19 +208,22 @@ export default function Team() {
                 <th className="px-5 py-3 text-left text-xs font-medium uppercase text-gray-500">
                   Joined
                 </th>
+                <th className="px-5 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                  Actions
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={3} className="px-5 py-8 text-center text-sm text-gray-500">
+                  <td colSpan={4} className="px-5 py-8 text-center text-sm text-gray-500">
                     Loading team members...
                   </td>
                 </tr>
               ) : members.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-5 py-8 text-center text-sm text-gray-500">
+                  <td colSpan={4} className="px-5 py-8 text-center text-sm text-gray-500">
                     No team members found.
                   </td>
                 </tr>
@@ -206,11 +240,32 @@ export default function Team() {
                     </td>
 
                     <td className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
-                      {member.role}
+                      {canManageTeam && member.role !== "OWNER" ? (
+                        <Select
+                          defaultValue={member.role}
+                          onChange={(role) => updateMemberRole(member.id, role)}
+                          options={[{ value: "ADMIN", label: "Admin" }, { value: "MEMBER", label: "Member" }, { value: "VIEWER", label: "Viewer" }]}
+                        />
+                      ) : (
+                        member.role
+                      )}
                     </td>
 
                     <td className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
                       {new Date(member.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-5 py-4 text-sm">
+                      {canManageTeam && member.role !== "OWNER" ? (
+                        <Button
+                          onClick={() => removeMember(member.id)}
+                          variant="dangerOutline"
+                          size="xs"
+                        >
+                          Remove
+                        </Button>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
                     </td>
                   </tr>
                 ))

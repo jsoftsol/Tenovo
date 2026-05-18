@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: DockerFile
     container_name: tenovo_app
     restart: unless-stopped
     env_file:

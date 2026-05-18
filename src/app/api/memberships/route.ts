@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { canManageOrganization } from '@/lib/permissions';
 import { createAuditLog } from '@/lib/audit';
 import { getCurrentMembership } from '@/lib/tenant';
+import { enqueueOrganizationInvitationEmail } from '@/queues/producers/email.producer';
 
 const allowedRoles = ['ADMIN', 'MEMBER', 'VIEWER'] as const;
 
@@ -105,6 +106,14 @@ export async function POST(request: Request) {
       addedUserEmail: email,
       role: membership.role,
     }
+  });
+
+  await enqueueOrganizationInvitationEmail({
+    organizationId: membership.organizationId,
+    organizationName: membership.organization.name,
+    invitedByUserId: membership.userId,
+    invitedEmail: user.email,
+    role: newMembership.role as "ADMIN" | "MEMBER" | "VIEWER",
   });
 
   return NextResponse.json({ member: newMembership }, { status: 201 });

@@ -6,7 +6,7 @@ import { QUEUE_NAMES } from "@/queues/queue-names";
 
 import OrganizationInvitationJobData from "@/types/organization-invitation-job-data";
 
-export const emailQueue = new Queue<OrganizationInvitationJobData>(
+const emailQueue = new Queue<OrganizationInvitationJobData>(
   QUEUE_NAMES.EMAIL,
   {
     connection: redisConnection,
@@ -21,3 +21,5 @@ export const emailQueue = new Queue<OrganizationInvitationJobData>(
     },
   }
 );
+
+export default emailQueue;

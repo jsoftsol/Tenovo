@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tenovo_app
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      - "127.0.0.1:${APP_PORT:-7000}:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - tenovo_network
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: tenovo_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tenovo_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-tenovo_db}
+    volumes:
+      - tenovo_postgres_data:/var/lib/postgresql/data
+    networks:
+      - tenovo_network
+
+  redis:
+    image: redis:8-alpine
+    container_name: tenovo_redis
+    restart: unless-stopped
+    volumes:
+      - tenovo_redis_data:/data
+    networks:
+      - tenovo_network
+
+volumes:
+  tenovo_postgres_data:
+  tenovo_redis_data:
+
+networks:
+  tenovo_network:
+    driver: bridge

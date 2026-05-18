@@ -14,6 +14,19 @@ services:
       - redis
     networks:
       - tenovo_network
+  migrate:
+    build:
+      context: .
+      dockerfile: DockerFile
+      target: builder
+    container_name: tenovo_migrate
+    env_file:
+      - .env.production
+    command: ["npx", "prisma", "migrate", "deploy"]
+    depends_on:
+      - postgres
+    networks:
+      - tenovo_network
 
   postgres:
     image: postgres:17-alpine

@@ -21,10 +21,10 @@ printf "%s" "$PRODUCTION_ENV" > .env.production
 chmod 600 .env.production
 
 echo "Building and starting Docker services..."
-docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build app postgres redis
 
 echo "Running Prisma production migrations..."
-docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app npx prisma migrate deploy
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm migrate
 
 echo "Pruning unused Docker images..."
 docker image prune -f

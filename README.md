@@ -1,208 +1,640 @@
-# TailAdmin Next.js - Free Next.js Tailwind Admin Dashboard Template
+# Tenovo
 
-TailAdmin is a free and open-source admin dashboard template built on **Next.js and Tailwind CSS** providing developers with everything they need to create a feature-rich and data-driven: back-end, dashboard, or admin panel solution for any sort of web project.
+Production-grade multi-tenant SaaS platform built with Next.js, Prisma, PostgreSQL, Redis, BullMQ, and TailAdmin.
 
-![TailAdmin - Next.js Dashboard Preview](./banner.png)
+Tenovo was built as a public architecture showcase demonstrating scalable SaaS engineering patterns including tenant isolation, RBAC, background job processing, audit logging, distributed systems concepts, and production-grade infrastructure.
 
-With TailAdmin Next.js, you get access to all the necessary dashboard UI components, elements, and pages required to build a high-quality and complete dashboard or admin panel. Whether you're building a dashboard or admin panel for a complex web application or a simple website.
+---
 
-TailAdmin utilizes the powerful features of **Next.js 16** and common features of Next.js such as server-side rendering (SSR), static site generation (SSG), and seamless API route integration. Combined with the advancements of **React 19** and the robustness of **TypeScript**, TailAdmin is the perfect solution to help get your project up and running quickly.
+# Tech Stack
 
-## Overview
+## Frontend
 
-TailAdmin provides essential UI components and layouts for building feature-rich, data-driven admin dashboards and control panels. It's built on:
-
-* Next.js 16.x
-* React 19
+* Next.js (App Router)
+* React
 * TypeScript
-* Tailwind CSS V4
+* TailwindCSS
+* TailAdmin
+* Axios
+* Sonner
 
-### Quick Links
+## Backend
 
-* [✨ Visit Website](https://tailadmin.com)
-* [📄 Documentation](https://tailadmin.com/docs)
-* [⬇️ Download](https://tailadmin.com/download)
-* [🖌️ Figma Design File (Community Edition)](https://www.figma.com/community/file/1463141366275764364)
-* [⚡ Get PRO Version](https://tailadmin.com/pricing)
+* Next.js Route Handlers
+* Prisma 7
+* PostgreSQL
+* Redis
+* BullMQ
+* Auth.js (NextAuth v5)
 
-### Demos
+## Infrastructure
 
-* [Free Version](https://nextjs-free-demo.tailadmin.com)
-* [Pro Version](https://nextjs-demo.tailadmin.com)
+* Docker
+* PostgreSQL Container
+* Redis Container
 
-### Other Versions
+---
 
-- [Next.js Version](https://github.com/TailAdmin/free-nextjs-admin-dashboard)
-- [React.js Version](https://github.com/TailAdmin/free-react-tailwind-admin-dashboard)
-- [Vue.js Version](https://github.com/TailAdmin/vue-tailwind-admin-dashboard)
-- [Angular Version](https://github.com/TailAdmin/free-angular-tailwind-dashboard)
-- [Laravel Version](https://github.com/TailAdmin/tailadmin-laravel)
+# Key Engineering Concepts
 
-## Installation
+## Multi-Tenant SaaS Architecture
 
-### Prerequisites
+Tenovo uses a shared-database multi-tenant architecture.
 
-To get started with TailAdmin, ensure you have the following prerequisites installed and set up:
+Every record is tenant-scoped using:
 
-* Node.js 18.x or later (recommended to use Node.js 20.x or later)
-
-### Cloning the Repository
-
-Clone the repository using the following command:
-
-```bash
-git clone https://github.com/TailAdmin/free-nextjs-admin-dashboard.git
+```ts
+organizationId
 ```
 
-> Windows Users: place the repository near the root of your drive if you face issues while cloning.
+All queries enforce tenant isolation.
 
-1. Install dependencies:
+Example:
 
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+```ts
+await prisma.project.findMany({
+  where: {
+    organizationId: membership.organizationId,
+  },
+});
+```
 
-   > Use `--legacy-peer-deps` flag if you face peer-dependency error during installation.
+---
 
-2. Start the development server:
+## Role-Based Access Control (RBAC)
 
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
+Supported roles:
 
-## Components
+```txt
+OWNER
+ADMIN
+MEMBER
+VIEWER
+```
 
-TailAdmin is a pre-designed starting point for building a web-based dashboard using Next.js and Tailwind CSS. The template includes:
+Permissions are enforced both:
 
-* Sophisticated and accessible sidebar
-* Data visualization components
-* Profile management and custom 404 page
-* Tables and Charts(Line and Bar)
-* Authentication forms and input elements
-* Alerts, Dropdowns, Modals, Buttons and more
-* Can't forget Dark Mode 🕶️
+* Backend APIs
+* Frontend UI
 
-All components are built with React and styled using Tailwind CSS for easy customization.
+Examples:
 
-## Feature Comparison
+* Only ADMIN/OWNER can manage team members
+* OWNER cannot be removed
+* OWNER role cannot be modified
 
-### Free Version
+---
 
-* 1 Unique Dashboard
-* 30+ dashboard components
-* 50+ UI elements
-* Basic Figma design files
-* Community support
+## Tenant Context System
 
-### Pro Version
+The application uses a server-to-client tenant context architecture.
 
-* 7 Unique Dashboards: Analytics, Ecommerce, Marketing, CRM, SaaS, Stocks, Logistics (more coming soon)
-* 500+ dashboard components and UI elements
-* Complete Figma design file
-* Email support
+### Flow
 
-To learn more about pro version features and pricing, visit our [pricing page](https://tailadmin.com/pricing).
+```txt
+Server Layout
+→ Fetch session + membership
+→ Pass to AppProvider
+→ Available globally in client components
+```
 
-## Changelog
+Provided context:
 
-### Version 2.3.0 - [April 28, 2026]
+```ts
+user
+organization
+organizations[]
+role
+```
 
-- **New Feature**: Added **AI Dashboard** with token usage and revenue tracking.
-- **New Feature**: Added **Sales Dashboard** with retention and multi-channel analytics.
-- **New Feature**: Added **Finance Dashboard** with cashflow and balance management.
-- **New Feature**: Introduced **6 New Layout variations** for improved UI flexibility.
-- **Enhancement**: Integrated **Advanced Data Visualization** with 7+ new chart types.
+---
 
-### Version 2.2.3 - [March 15, 2026]
+## Organization Switcher
 
-* update ESLint configuration and dependencies; upgrade Next.js to version 16.1.6
+One user can belong to multiple organizations.
 
-### Version 2.2.2 - [December 30, 2025]
+Active organization is stored using:
 
-* Fixed date picker positioning and functionality in Statistics Chart.
+```txt
+tenovo_active_org_id
+```
 
+Tenant switching updates:
 
-### Version 2.1.0 - [November 15, 2025]
+* Projects
+* Audit logs
+* Dashboard metrics
+* Team members
 
-* Updated to Next.js 16.x
-* Fixed all reported minor bugs
+without mixing tenant data.
 
-### Version 2.0.2 - [March 25, 2025]
+---
 
-* Upgraded to Next.js 16.x for [CVE-2025-29927](https://nextjs.org/blog/cve-2025-29927) concerns
-* Included overrides vectormap for packages to prevent peer dependency errors during installation.
-* Migrated from react-flatpickr to flatpickr package for React 19 support
+## Authentication
 
-### Version 2.0.1 - [February 27, 2025]
+Implemented using Auth.js v5.
 
-#### Update Overview
+Features:
 
-* Upgraded to Tailwind CSS v4 for better performance and efficiency.
-* Updated class usage to match the latest syntax and features.
-* Replaced deprecated class and optimized styles.
+* Credentials authentication
+* JWT sessions
+* Protected admin routes
+* Secure password hashing with bcryptjs
+* Middleware-based route protection
 
-#### Next Steps
+---
 
-* Run npm install or yarn install to update dependencies.
-* Check for any style changes or compatibility issues.
-* Refer to the Tailwind CSS v4 [Migration Guide](https://tailwindcss.com/docs/upgrade-guide) on this release. if needed.
-* This update keeps the project up to date with the latest Tailwind improvements. 🚀
+## Background Job Processing
 
-### v2.0.0 (February 2025)
+Redis-backed BullMQ queues are used for asynchronous processing.
 
-A major update focused on Next.js 16 implementation and comprehensive redesign.
+Current implementation:
 
-#### Major Improvements
+```txt
+Organization invitation email jobs
+```
 
-* Complete redesign using Next.js 16 App Router and React Server Components
-* Enhanced user interface with Next.js-optimized components
-* Improved responsiveness and accessibility
-* New features including collapsible sidebar, chat screens, and calendar
-* Redesigned authentication using Next.js App Router and server actions
-* Updated data visualization using ApexCharts for React
+Architecture:
 
-#### Breaking Changes
+```txt
+API Route
+→ Queue Producer
+→ Redis Queue
+→ Worker Process
+```
 
-* Migrated from Next.js 14 to Next.js 16
-* Chart components now use ApexCharts for React
-* Authentication flow updated to use Server Actions and middleware
+This pattern is extensible for:
 
-[Read more](https://tailadmin.com/docs/update-logs/nextjs) on this release.
+* Emails
+* AI processing
+* Video processing
+* Webhooks
+* Report generation
+* Scheduled jobs
 
-### v1.3.4 (July 01, 2024)
+---
 
-* Fixed JSvectormap rendering issues
+## Audit Logging
 
-### v1.3.3 (June 20, 2024)
+All critical actions are tracked.
 
-* Fixed build error related to Loader component
+Implemented events:
 
-### v1.3.2 (June 19, 2024)
+```txt
+project.created
+membership.created
+membership.role_updated
+membership.removed
+```
 
-* Added ClickOutside component for dropdown menus
-* Refactored sidebar components
-* Updated Jsvectormap package
+Audit logs are tenant-scoped and queryable from the dashboard.
 
-### v1.3.1 (Feb 12, 2024)
+---
 
-* Fixed layout naming consistency
-* Updated styles
+# Features Implemented
 
-### v1.3.0 (Feb 05, 2024)
+## Authentication
 
-* Upgraded to Next.js 14
-* Added Flatpickr integration
-* Improved form elements
-* Enhanced multiselect functionality
-* Added default layout component
+* Sign up
+* Sign in
+* Sign out
+* Protected routes
+* Session handling
 
-## License
+## Organizations
 
-TailAdmin Next.js Free Version is released under the MIT License.
+* Multi-tenant organizations
+* Organization switching
+* Membership management
 
-## Support
-If you find this project helpful, please consider giving it a star on GitHub. Your support helps us continue developing and maintaining this template.
+## Projects
+
+* Tenant-scoped CRUD
+* Modal creation flow
+* Toast notifications
+
+## Team Management
+
+* Add members
+* Remove members
+* Change roles
+* RBAC enforcement
+
+## Audit Logs
+
+* Activity history
+* Tenant-scoped event tracking
+
+## Dashboard
+
+* Server-rendered metrics
+* Real tenant statistics
+
+## Distributed Systems
+
+* Redis queues
+* BullMQ workers
+* Async job processing
+
+---
+
+# Prisma Architecture
+
+## Modular Prisma Schema
+
+The Prisma schema is split into separate files.
+
+```txt
+prisma/
+  schema.prisma
+
+  enums/
+    role.prisma
+
+  models/
+    user.prisma
+    account.prisma
+    session.prisma
+    verification-token.prisma
+    organization.prisma
+    membership.prisma
+    project.prisma
+    audit-log.prisma
+```
+
+One model per file.
+
+One enum per file.
+
+---
+
+## Centralized Type Architecture
+
+Application-level types are separated into dedicated reusable files.
+
+```txt
+src/types/
+```
+
+Examples:
+
+```txt
+src/types/email-job-name.ts
+src/types/organization-role.ts
+src/types/api-response.ts
+```
+
+This keeps:
+
+* Queue systems strongly typed
+* API contracts reusable
+* Shared frontend/backend types centralized
+* Business logic easier to maintain
+
+Configured using Prisma 7:
+
+```txt
+prisma.config.ts
+```
+
+---
+
+# Project Structure
+
+```txt
+src/
+  app/
+    (admin)/
+    (full-width-pages)/
+    api/
+
+  context/
+  lib/
+  queues/
+  workers/
+  types/
+
+prisma/
+```
+
+---
+
+# Docker Setup
+
+Services:
+
+* PostgreSQL
+* Redis
+
+Run locally:
+
+```bash
+docker compose up -d
+```
+
+---
+
+# Deployment Architecture
+
+Tenovo uses a production-grade containerized deployment architecture with GitHub Actions CI/CD, Docker Compose, PostgreSQL, Redis, and host-level Nginx reverse proxying.
+
+Deployments are triggered automatically whenever the:
+
+```txt
+deploy
+```
+
+branch is updated.
+
+---
+
+# Production Deployment Flow
+
+```txt
+GitHub (deploy branch)
+        ↓
+GitHub Actions
+        ↓
+SSH/SCP deployment
+        ↓
+Ubuntu VPS
+        ↓
+Docker Compose Stack
+    ├── Next.js App
+    ├── PostgreSQL
+    ├── Redis
+    └── Prisma Migration Runner
+        ↓
+Host Nginx Reverse Proxy
+        ↓
+HTTPS Domain
+```
+
+---
+
+# Infrastructure Design
+
+## Host Machine Responsibilities
+
+The VPS host only manages:
+
+* Docker Engine
+* Docker Compose
+* Nginx
+* Certbot SSL
+
+No application runtime or Node.js dependencies are installed directly on the host machine.
+
+This keeps deployments reproducible, isolated, and easy to maintain.
+
+---
+
+## Dockerized Services
+
+Each application runs in an isolated Docker Compose stack.
+
+Current Tenovo services:
+
+| Service  | Purpose                           |
+| -------- | --------------------------------- |
+| app      | Next.js production runtime        |
+| postgres | PostgreSQL database               |
+| redis    | Redis cache / BullMQ backend      |
+| migrate  | Dedicated Prisma migration runner |
+
+---
+
+# Reverse Proxy Architecture
+
+Nginx runs directly on the host VPS and proxies traffic to internal Docker services.
+
+Example:
+
+```txt
+https://tenovo.example.com
+        ↓
+127.0.0.1:3100
+        ↓
+Docker container :3000
+```
+
+This architecture allows multiple independent applications to coexist safely on the same VPS.
+
+---
+
+# CI/CD Workflow
+
+Deployment is Git-driven.
+
+Workflow:
+
+1. Push to `deploy`
+2. GitHub Actions workflow starts
+3. Repository checked out
+4. Production environment generated from GitHub Secrets
+5. Files uploaded to VPS via SCP
+6. Docker Compose rebuilds containers
+7. Prisma migrations execute
+8. Old Docker images pruned
+
+Primary workflow:
+
+```txt
+.github/workflows/deploy.yml
+```
+
+---
+
+# GitHub Secrets
+
+Sensitive values are never committed to source control.
+
+Secrets are stored using:
+
+```txt
+GitHub Repository Secrets
+```
+
+Current deployment secrets:
+
+| Secret         | Purpose                          |
+| -------------- | -------------------------------- |
+| SERVER_HOST    | VPS hostname/IP                  |
+| SERVER_USER    | SSH deployment user              |
+| SERVER_SSH_KEY | Private SSH deployment key       |
+| SERVER_APP_DIR | Remote deployment directory      |
+| PRODUCTION_ENV | Full production environment file |
+
+---
+
+# Environment Management
+
+The repository only includes:
+
+```txt
+.env.production.example
+```
+
+Real production values are securely injected during deployment through GitHub Actions.
+
+---
+
+# Docker Production Strategy
+
+Containers use multi-stage Docker builds.
+
+Key characteristics:
+
+* Node.js Alpine runtime
+* Next.js standalone output
+* Small production images
+* Internal-only service networking
+* Isolated runtime environments
+
+---
+
+# Prisma Migration Strategy
+
+Database migrations run using a dedicated migration service:
+
+```bash
+docker compose run --rm migrate
+```
+
+This keeps Prisma tooling out of the lightweight application runtime container.
+
+---
+
+# Security Considerations
+
+## Internal Service Isolation
+
+PostgreSQL and Redis are not publicly exposed.
+
+Only the internal application port is bound:
+
+```txt
+127.0.0.1:3100
+```
+
+External traffic must pass through Nginx.
+
+---
+
+## SSH Authentication
+
+Deployments use SSH key authentication.
+
+No passwords are used.
+
+---
+
+## Secret Isolation
+
+Credentials, production paths, and environment variables are never committed to the repository.
+
+---
+
+# Manual Deployment
+
+Deployment can also be executed manually on the VPS:
+
+```bash
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm migrate
+```
+
+---
+
+# Running The Project
+
+## Install dependencies
+
+```bash
+npm install
+```
+
+## Start infrastructure
+
+```bash
+docker compose up -d
+```
+
+## Run migrations
+
+```bash
+npx prisma migrate dev
+```
+
+## Generate Prisma client
+
+```bash
+npx prisma generate
+```
+
+## Start development server
+
+```bash
+npm run dev
+```
+
+## Start BullMQ worker
+
+```bash
+npm run worker:email
+```
+
+---
+
+# Why This Project Exists
+
+Most of my production work was built inside private company repositories and cannot be shared publicly.
+
+Tenovo was created to publicly demonstrate:
+
+* Multi-tenant SaaS architecture
+* Distributed systems thinking
+* Real-world backend engineering
+* Modern Next.js architecture
+* Prisma/PostgreSQL design
+* Redis queue systems
+* RBAC implementation
+* Production-grade infrastructure patterns
+
+---
+
+# Future Roadmap
+
+Planned improvements:
+
+* Real email provider integration
+* WebSocket notifications
+* Billing architecture
+* AI task processing queues
+* Activity feed
+* File uploads
+* S3/Wasabi integration
+* Rate limiting
+* Monitoring/observability
+* CI/CD pipelines
+* Kubernetes deployment
+
+---
+
+# Portfolio Positioning
+
+This project is intentionally focused on:
+
+```txt
+Architecture > tutorial CRUD
+```
+
+The goal is to demonstrate:
+
+* Scalable engineering patterns
+* Clean system design
+* Production-ready thinking
+* Full-stack product ownership
+
+rather than isolated UI components.

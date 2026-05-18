@@ -18,17 +18,20 @@ jobs:
 
       - name: Prepare release folder
         run: |
+          rm -rf release
           mkdir -p release
+
           rsync -av \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
             --exclude='.next' \
+            --exclude='release' \
             --exclude='.env*' \
             ./ release/
 
           printf "%s" "${{ secrets.PRODUCTION_ENV }}" > release/.env.production
-          chmod 644 release/.env.production
+          chmod -R u+rwX,go+rX release
 
       - name: Upload release to server
         uses: appleboy/scp-action@v0.1.7

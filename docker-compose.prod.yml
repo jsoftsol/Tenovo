@@ -14,6 +14,39 @@ services:
       - redis
     networks:
       - tenovo_network
+      
+  realtime:
+    build:
+      context: .
+      dockerfile: DockerFile
+      target: builder
+    container_name: tenovo_realtime
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    command: ["npm", "run", "realtime"]
+    ports:
+      - "127.0.0.1:${SOCKET_PORT:-4001}:4001"
+    depends_on:
+      - redis
+    networks:
+      - tenovo_network
+
+  worker_email:
+    build:
+      context: .
+      dockerfile: DockerFile
+      target: builder
+    container_name: tenovo_worker_email
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    command: ["npm", "run", "worker:email"]
+    depends_on:
+      - redis
+    networks:
+      - tenovo_network
+
   migrate:
     build:
       context: .

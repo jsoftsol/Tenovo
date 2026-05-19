@@ -17,6 +17,7 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
+  ServerIcon,
 } from "@/icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { useAppContext } from "@/context/AppContext";
@@ -54,6 +55,11 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "Team",
     path: "/team",
+  },
+  {
+    icon: <ServerIcon />,
+    name: "Jobs",
+    path: "/jobs",
   },
   {
     icon: <CalenderIcon />,

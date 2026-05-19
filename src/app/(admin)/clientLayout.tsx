@@ -9,8 +9,8 @@ import React from "react";
 import { AppProvider } from "@/context/AppContext";
 import UserType from "@/types/user";
 import MembershipType from "@/types/membership";
-import {Toaster} from "sonner";
-
+import { Toaster } from "sonner";
+import { RealtimeProvider } from "@/context/RealtimeProvider";
 
 export default function ClientLayout({
   children,
@@ -34,21 +34,21 @@ export default function ClientLayout({
 
   return (
     <AppProvider value={{ membership, memberships, user }}>
-      <div className="min-h-screen xl:flex">
-        {/* Sidebar and Backdrop */}
-        <AppSidebar />
-        <Backdrop />
-        {/* Main Content Area */}
-        <div
-          className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
-        >
-          {/* Header */}
-          <AppHeader />
-          {/* Page Content */}
-          <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+      <RealtimeProvider>
+        <div className="min-h-screen xl:flex">
+          {/* Sidebar and Backdrop */}
+          <AppSidebar />
+          <Backdrop />
+          {/* Main Content Area */}
+          <div className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}>
+            {/* Header */}
+            <AppHeader />
+            {/* Page Content */}
+            <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+          </div>
         </div>
-      </div>
-      <Toaster richColors position="top-right" />
+        <Toaster richColors position="top-right" />
+      </RealtimeProvider>
     </AppProvider>
   );
 }

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "worker:email": "tsx src/workers/email.worker.ts"
+    "worker:email": "tsx src/workers/email.worker.ts",
+    "realtime": "tsx src/realtime/socket-server.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

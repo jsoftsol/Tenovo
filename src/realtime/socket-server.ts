@@ -26,6 +26,18 @@ await Promise.all([redisClient.connect(), subRedisClient.connect()]);
 
 io.adapter(createAdapter(redisClient, subRedisClient));
 
+const notificationSubClient = createClient({
+  url: process.env.REDIS_URL,
+});
+
+await notificationSubClient.connect();
+
+await notificationSubClient.subscribe("tenovo:notifications", (message) => {
+  const notification = JSON.parse(message);
+
+  io.to(`organization:${notification.organizationId}`).emit("notification:new", notification);
+});
+
 io.on("connection", (socket) => {
   socket.on("organization:join", (organizationId: string) => {
     socket.join(`organization:${organizationId}`);

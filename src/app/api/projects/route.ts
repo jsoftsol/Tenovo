@@ -3,6 +3,7 @@ import { getCurrentMembership } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { canManageProjects, canViewProjects } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
+import { publishNotification } from "@/lib/realtime";
 
 export async function GET() {
   const membership = await getCurrentMembership();
@@ -68,6 +69,14 @@ export async function POST(request: Request) {
       name: project.name,
       description: project.description,
     },
+  });
+
+  await publishNotification({
+    organizationId: membership.organizationId,
+    title: "Project created",
+    message: `${project.name} was created.`,
+    type: "success",
+    createdAt: new Date().toISOString(),
   });
 
   return NextResponse.json({ project }, { status: 201 });

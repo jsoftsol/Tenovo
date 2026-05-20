@@ -212,6 +212,7 @@ Audit logs are tenant-scoped and queryable from the dashboard.
 * Tenant-scoped CRUD
 * Modal creation flow
 * Toast notifications
+* Realtime project-created notifications
 
 ## Team Management
 
@@ -225,16 +226,21 @@ Audit logs are tenant-scoped and queryable from the dashboard.
 * Activity history
 * Tenant-scoped event tracking
 
-## Dashboard
+## Queue Monitoring
 
-* Server-rendered metrics
-* Real tenant statistics
+* Server-rendered jobs dashboard
+* BullMQ queue statistics
+* Recent job visibility
+* Waiting / active / completed / failed / delayed job counts
 
 ## Distributed Systems
 
 * Redis queues
 * BullMQ workers
 * Async job processing
+* Dedicated Socket.IO realtime service
+* Redis Pub/Sub notification broadcasting
+* Server-rendered queue/job monitoring dashboard
 
 ---
 
@@ -395,12 +401,14 @@ Each application runs in an isolated Docker Compose stack.
 
 Current Tenovo services:
 
-| Service  | Purpose                           |
-| -------- | --------------------------------- |
-| app      | Next.js production runtime        |
-| postgres | PostgreSQL database               |
-| redis    | Redis cache / BullMQ backend      |
-| migrate  | Dedicated Prisma migration runner |
+| Service      | Purpose                               |
+| ------------ | ------------------------------------- |
+| app          | Next.js production runtime            |
+| realtime     | Dedicated Socket.IO realtime server   |
+| worker_email | BullMQ background email worker        |
+| postgres     | PostgreSQL database                   |
+| redis        | Redis cache / BullMQ backend / PubSub |
+| migrate      | Dedicated Prisma migration runner     |
 
 ---
 
@@ -490,6 +498,55 @@ Key characteristics:
 * Small production images
 * Internal-only service networking
 * Isolated runtime environments
+* Independent worker scaling
+* Separate realtime infrastructure
+
+---
+
+## Realtime Infrastructure
+
+Realtime communication uses a dedicated Socket.IO server container.
+
+Architecture:
+
+```txt
+Next.js App
+        ↓
+Redis Pub/Sub
+        ↓
+Socket.IO Realtime Server
+        ↓
+Connected Clients
+```
+
+This architecture avoids coupling websocket infrastructure directly into the Next.js runtime.
+
+Benefits:
+
+* Independent scaling
+* Cleaner separation of concerns
+* Better production deployment compatibility
+* Redis-backed horizontal scaling support
+
+---
+
+## Background Workers
+
+BullMQ workers run as dedicated isolated containers.
+
+Current workers:
+
+```txt
+worker_email
+```
+
+This architecture supports future expansion into:
+
+* AI processing workers
+* Video transcoding workers
+* Webhook processing workers
+* Scheduled jobs
+* Analytics pipelines
 
 ---
 
@@ -609,7 +666,8 @@ Tenovo was created to publicly demonstrate:
 Planned improvements:
 
 * Real email provider integration
-* WebSocket notifications
+* Queue retry dashboard
+* WebSocket notification center
 * Billing architecture
 * AI task processing queues
 * Activity feed
@@ -617,8 +675,12 @@ Planned improvements:
 * S3/Wasabi integration
 * Rate limiting
 * Monitoring/observability
-* CI/CD pipelines
+* CI/CD pipeline improvements
 * Kubernetes deployment
+* Blue/green deployments
+* Centralized logging
+* Automated backups
+* Distributed websocket scaling
 
 ---
 

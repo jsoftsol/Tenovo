@@ -56,6 +56,6 @@ jobs:
           envs: APP_DIR
           script: |
             cd "$APP_DIR"
-            docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build app postgres redis
+            docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
             docker compose --env-file .env.production -f docker-compose.prod.yml run --rm migrate
             docker image prune -f

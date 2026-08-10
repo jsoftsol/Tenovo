@@ -28,6 +28,7 @@ Persistent working memory for this project, loaded automatically every session v
 
 ### 2026-08-11 (cont'd 9)
 - User asked that nothing be saved globally anymore — migrated the 3 global auto-memory files (`~/.claude/projects/D--Documents-Nextjs-Tenovo/memory/`) into a new `docs/memory/` folder in the repo (`project-overview.md`, `doc-workflow.md`, `no-ai-attribution.md`, plus a local `MEMORY.md` index), deleted the global originals after confirming migration, and added a note to CLAUDE.md's "Persistent Context" section instructing future sessions to write standing rules/preferences into `docs/memory/` or `PROGRESS.md` instead of global memory.
+- Committed (`dc5d812`) and pushed to `origin/master`. Push output surfaced GitHub's Dependabot count (19) as informational noise, not a new finding — already-known UI lag behind the actual `npm audit` 0-vulnerability state (see the dependency-vulnerabilities bullet above).
 
 ### 2026-08-11 (cont'd 8)
 - Verified the GitHub About panel/topics/license went live as expected via `gh repo view` — description, homepage, MIT license, and all 20 topics confirmed on `jsoftsol/Tenovo`.

@@ -25,6 +25,10 @@ Persistent working memory for this project, loaded automatically every session v
 
 ## Session Log
 
+### 2026-08-11 (cont'd 8)
+- Verified the GitHub About panel/topics/license went live as expected via `gh repo view` — description, homepage, MIT license, and all 20 topics confirmed on `jsoftsol/Tenovo`.
+- User asked about keeping the `LICENSE` copyright year current "going forward" (static year vs. `-present` range vs. CI automation) — after discussion, decided no change needed; year stays a plain `2026`.
+
 ### 2026-08-11 (cont'd 7)
 - User asked for the GitHub repo's right-side "About" sidebar to be filled in — initially misread this as a request to build an in-app project detail page with an About/keywords panel; ran a full brainstorming pass (spec written to `docs/superpowers/specs/2026-08-11-project-about-keywords-design.md`, committed) before the user corrected the misunderstanding. Removed that spec afterward (`5234cfb`) since it didn't reflect the actual ask.
 - Drafted and applied the real ask via `gh repo edit`: description, homepage (`https://tenovo.jsoftsol.com`), and 20 topics on `jsoftsol/Tenovo`. Verified with `gh repo view --json description,homepageUrl,repositoryTopics`. This is GitHub-side repo config, not a codebase change — no commit for it.

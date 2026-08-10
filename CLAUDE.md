@@ -11,6 +11,8 @@ This project keeps two living docs, imported below so they load into every sessi
 
 `PRD.md` is the feature-by-feature spec reconstructed from the actual code (what's implemented, what's a gap, what's explicitly out of scope). `PROGRESS.md` is a running log of decisions and session-to-session state.
 
+**All context for this project stays inside this repository — nothing is saved to the global `~/.claude/projects/*/memory/` auto-memory system.** Standing rules, corrections, and preferences that aren't a good fit for `PROGRESS.md`'s session log live in `docs/memory/` instead (see `docs/memory/MEMORY.md` for the index). If asked to "remember" something for this project, write it into `PROGRESS.md` or `docs/memory/`, not global memory.
+
 **Update PROGRESS.md** when the user asks to save/checkpoint progress, or at the end of a meaningful chunk of work — see the "How to update this file" note at the top of PROGRESS.md for what belongs there. **Update PRD.md** whenever a change makes its description of a feature inaccurate (new endpoint, behavior change, a gap getting fixed) — it should always reflect current reality, not a point-in-time snapshot.
 
 ## Project

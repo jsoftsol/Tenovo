@@ -12,6 +12,7 @@ Persistent working memory for this project, loaded automatically every session v
 
 ## Current State
 
+- All project context now lives inside this repo — nothing is saved to the global `~/.claude/projects/*/memory/` auto-memory system anymore. Standing rules/preferences live in `docs/memory/` (see `docs/memory/MEMORY.md`); CLAUDE.md's "Persistent Context" section states this explicitly for future sessions.
 - Core product surface is implemented and matches PRD.md section 4, except the gaps listed in PRD.md §7.
 - Admin shell nav/header has been trimmed to only the real product pages (Dashboard, Projects, Audit Logs, Team, Jobs) — TailAdmin's demo pages (Calendar, Forms, Tables, Charts, UI Elements, Authentication demo links) are no longer in the sidebar, though the routes/components still exist under `src/app/(admin)/`. Logo is now the Tenovo mark + wordmark, not the TailAdmin stock logo.
 - No open feature work in progress as of the last entry below.
@@ -24,6 +25,9 @@ Persistent working memory for this project, loaded automatically every session v
 - `LICENSE` copyright line now reads `Copyright (c) 2026 Ammad Sarfraz` — previously the unmodified TailAdmin template notice (`Copyright (c) 2023 TailAdmin`), replaced outright rather than kept alongside a second line (`35f9a26`).
 
 ## Session Log
+
+### 2026-08-11 (cont'd 9)
+- User asked that nothing be saved globally anymore — migrated the 3 global auto-memory files (`~/.claude/projects/D--Documents-Nextjs-Tenovo/memory/`) into a new `docs/memory/` folder in the repo (`project-overview.md`, `doc-workflow.md`, `no-ai-attribution.md`, plus a local `MEMORY.md` index), deleted the global originals after confirming migration, and added a note to CLAUDE.md's "Persistent Context" section instructing future sessions to write standing rules/preferences into `docs/memory/` or `PROGRESS.md` instead of global memory.
 
 ### 2026-08-11 (cont'd 8)
 - Verified the GitHub About panel/topics/license went live as expected via `gh repo view` — description, homepage, MIT license, and all 20 topics confirmed on `jsoftsol/Tenovo`.

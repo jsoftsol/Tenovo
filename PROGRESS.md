@@ -12,7 +12,7 @@ Persistent working memory for this project, loaded automatically every session v
 
 ## Current State
 
-- All project context now lives inside this repo — nothing is saved to the global `~/.claude/projects/*/memory/` auto-memory system anymore. Standing rules/preferences live in `docs/memory/` (see `docs/memory/MEMORY.md`); CLAUDE.md's "Persistent Context" section states this explicitly for future sessions.
+- All project context now lives inside this repo — nothing is saved to the global `~/.claude/projects/*/memory/` auto-memory system anymore. Standing rules/preferences live in `docs/memory/` (see `docs/memory/MEMORY.md`); CLAUDE.md's "Persistent Context" section states this explicitly for future sessions. `docs/memory/MEMORY.md` itself is now `@`-imported in CLAUDE.md alongside PRD.md/PROGRESS.md, so its index of one-line hooks auto-loads every session too — individual memory files under `docs/memory/` are still read on demand, not eagerly.
 - Core product surface is implemented and matches PRD.md section 4, except the gaps listed in PRD.md §7.
 - Admin shell nav/header has been trimmed to only the real product pages (Dashboard, Projects, Audit Logs, Team, Jobs) — TailAdmin's demo pages (Calendar, Forms, Tables, Charts, UI Elements, Authentication demo links) are no longer in the sidebar, though the routes/components still exist under `src/app/(admin)/`. Logo is now the Tenovo mark + wordmark, not the TailAdmin stock logo.
 - No open feature work in progress as of the last entry below.
@@ -25,6 +25,9 @@ Persistent working memory for this project, loaded automatically every session v
 - `LICENSE` copyright line now reads `Copyright (c) 2026 Ammad Sarfraz` — previously the unmodified TailAdmin template notice (`Copyright (c) 2023 TailAdmin`), replaced outright rather than kept alongside a second line (`35f9a26`).
 
 ## Session Log
+
+### 2026-08-11 (cont'd 10)
+- User asked that local files auto-load every session; clarified via question that `docs/memory/MEMORY.md` (the index, not each file underneath it) was the gap — CLAUDE.md's "Persistent Context" `@`-import block only pulled `PRD.md`/`PROGRESS.md`, not the memory index added in the previous entry. Added `@docs/memory/MEMORY.md` to that block. Chose index-only over importing every memory file individually so CLAUDE.md doesn't need a new line each time a memory file is added; the index's one-line hooks are enough to signal when to go read a specific file on demand.
 
 ### 2026-08-11 (cont'd 9)
 - User asked that nothing be saved globally anymore — migrated the 3 global auto-memory files (`~/.claude/projects/D--Documents-Nextjs-Tenovo/memory/`) into a new `docs/memory/` folder in the repo (`project-overview.md`, `doc-workflow.md`, `no-ai-attribution.md`, plus a local `MEMORY.md` index), deleted the global originals after confirming migration, and added a note to CLAUDE.md's "Persistent Context" section instructing future sessions to write standing rules/preferences into `docs/memory/` or `PROGRESS.md` instead of global memory.

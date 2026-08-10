@@ -13,11 +13,17 @@ Persistent working memory for this project, loaded automatically every session v
 ## Current State
 
 - Core product surface is implemented and matches PRD.md section 4, except the gaps listed in PRD.md §7.
+- Admin shell nav/header has been trimmed to only the real product pages (Dashboard, Projects, Audit Logs, Team, Jobs) — TailAdmin's demo pages (Calendar, Forms, Tables, Charts, UI Elements, Authentication demo links) are no longer in the sidebar, though the routes/components still exist under `src/app/(admin)/`. Logo is now the Tenovo mark + wordmark, not the TailAdmin stock logo.
 - No open feature work in progress as of the last entry below.
 - Local dev requires 3 processes (`npm run dev`, `npm run worker:email`, `npm run realtime`) plus `docker compose up -d` for Postgres/Redis.
 - No automated tests exist in the repo yet.
+- GitHub Dependabot is flagging 19 vulnerabilities (11 high, 7 moderate, 1 low) on the default branch as of 2026-08-11 — not yet triaged.
 
 ## Session Log
+
+### 2026-08-11 (cont'd)
+- Reviewed pre-existing uncommitted changes to `AppHeader.tsx`/`AppSidebar.tsx` (rebrand to Tenovo logo, removal of TailAdmin demo nav items and the header search bar). Verified with `tsc --noEmit` and `eslint` — clean after removing 7 now-unused icon/`SidebarWidget` imports left behind in `AppSidebar.tsx`. Committed and pushed (`f7d9c65` rebrand, `c3540e1` docs) to `origin/master`.
+- Committed and pushed the `CLAUDE.md`/`PRD.md`/`PROGRESS.md` docs added earlier this session.
 
 ### 2026-08-11
 - Reverse-engineered the codebase and authored the initial documentation set: `CLAUDE.md` (architecture/dev-command reference for Claude Code), `PRD.md` (feature-by-feature spec reconstructed from the actual API routes/UI, including gaps vs the README's claims), and this `PROGRESS.md`.

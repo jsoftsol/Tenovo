@@ -12,7 +12,8 @@ Persistent working memory for this project, loaded automatically every session v
 
 ## Current State
 
-- All project context now lives inside this repo — nothing is saved to the global `~/.claude/projects/*/memory/` auto-memory system anymore. Standing rules/preferences live in `docs/memory/` (see `docs/memory/MEMORY.md`); CLAUDE.md's "Persistent Context" section states this explicitly for future sessions. `docs/memory/MEMORY.md` itself is now `@`-imported in CLAUDE.md alongside PRD.md/PROGRESS.md, so its index of one-line hooks auto-loads every session too — individual memory files under `docs/memory/` are still read on demand, not eagerly.
+- All project context lives inside this repo's working directory — nothing is saved to the global `~/.claude/projects/*/memory/` auto-memory system. Standing rules/preferences live in `docs/memory/` (see `docs/memory/MEMORY.md`); CLAUDE.md's "Persistent Context" section states this explicitly for future sessions. `docs/memory/MEMORY.md` itself is `@`-imported in CLAUDE.md alongside PRD.md/PROGRESS.md, so its index of one-line hooks auto-loads every session too — individual memory files under `docs/memory/` are still read on demand, not eagerly.
+- As of 2026-08-11, `docs/memory/` is **gitignored and untracked** (user wants the files present on disk here but not committed/pushed). The `@`-import in CLAUDE.md still works — Claude Code reads it off the filesystem regardless of git tracking status — but the memory files no longer travel with `git clone`/`git pull`; a fresh checkout of this repo won't have them. Keep writing to `docs/memory/` as before; just know it's local-only now, not repo-shared.
 - Core product surface is implemented and matches PRD.md section 4, except the gaps listed in PRD.md §7.
 - Admin shell nav/header has been trimmed to only the real product pages (Dashboard, Projects, Audit Logs, Team, Jobs) — TailAdmin's demo pages (Calendar, Forms, Tables, Charts, UI Elements, Authentication demo links) are no longer in the sidebar, though the routes/components still exist under `src/app/(admin)/`. Logo is now the Tenovo mark + wordmark, not the TailAdmin stock logo.
 - No open feature work in progress as of the last entry below.
@@ -25,6 +26,9 @@ Persistent working memory for this project, loaded automatically every session v
 - `LICENSE` copyright line now reads `Copyright (c) 2026 Ammad Sarfraz` — previously the unmodified TailAdmin template notice (`Copyright (c) 2023 TailAdmin`), replaced outright rather than kept alongside a second line (`35f9a26`).
 
 ## Session Log
+
+### 2026-08-11 (cont'd 11)
+- User wants `docs/memory/` present locally but not tracked in git. Added `/docs/memory/` to `.gitignore` and ran `git rm -r --cached docs/memory/` to untrack the 4 existing files without deleting them from disk. This is a further step past the earlier "no global memory" migration ((cont'd 9)/(cont'd 10) below) — memory now lives outside git entirely, not just outside `~/.claude`.
 
 ### 2026-08-11 (cont'd 10)
 - User asked that local files auto-load every session; clarified via question that `docs/memory/MEMORY.md` (the index, not each file underneath it) was the gap — CLAUDE.md's "Persistent Context" `@`-import block only pulled `PRD.md`/`PROGRESS.md`, not the memory index added in the previous entry. Added `@docs/memory/MEMORY.md` to that block. Chose index-only over importing every memory file individually so CLAUDE.md doesn't need a new line each time a memory file is added; the index's one-line hooks are enough to signal when to go read a specific file on demand.

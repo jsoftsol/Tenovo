@@ -48,3 +48,6 @@ next-env.d.ts
 /src/generated/prisma
 .env.production
 GitHubSecrets.txt
+
+# local-only project memory (kept on disk, not shared via git)
+/docs/memory/

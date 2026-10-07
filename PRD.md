@@ -1,6 +1,6 @@
 # Tenovo: Product Requirements Document
 
-Reverse-engineered from the current codebase (not a pre-written spec). This describes what the product actually does today, plus explicitly-flagged gaps and roadmap items. Update this file when a feature's behavior changes; see PROGRESS.md for the change log.
+Reverse-engineered from the current codebase (not a pre-written spec). This describes what the product actually does today, plus explicitly-flagged gaps and roadmap items. Update this file when a feature's behavior changes.
 
 ## 1. Product Summary
 
@@ -44,7 +44,7 @@ User ──< Account, Session   (Auth.js/NextAuth tables)
 - `Role` enum: `OWNER | ADMIN | MEMBER | VIEWER`.
 - `Account`, `Session`, `VerificationToken`: standard Auth.js/Prisma-adapter tables, not used for anything beyond credentials/JWT sessions today (no OAuth providers configured, no email verification flow wired up despite the `emailVerified` field existing).
 
-Full schema lives in `prisma/models/*.prisma` (one file per model); see CLAUDE.md for the modular-schema convention.
+Full schema lives in `prisma/models/*.prisma` (one file per model).
 
 ## 4. Feature Specs
 
@@ -99,7 +99,7 @@ Routes under `(others-pages)`, `(ui-elements)`, `(chart)`, `(tables)`, `(forms)`
 
 ## 5. Non-Functional Requirements
 
-- **Tenant isolation**: every Prisma query touching tenant data must filter by `organizationId` sourced from `getCurrentMembership()`, never from a client-supplied value. See CLAUDE.md's API route convention.
+- **Tenant isolation**: every Prisma query touching tenant data must filter by `organizationId` sourced from `getCurrentMembership()`, never from a client-supplied value.
 - **AuthZ before AuthN-adjacent logic**: every mutating route checks membership existence (401) then role (403) before touching Prisma.
 - **Auditability**: state-changing actions on Projects and Memberships write an audit log in the same request. New mutating features should follow this pattern unless explicitly transient.
 - **Horizontal scalability (demonstrated, not load-tested)**: realtime server and BullMQ workers are separate stateless-ish processes/containers coordinating through Redis, specifically to demonstrate this pattern; don't collapse them back into the Next.js server.
